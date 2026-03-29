@@ -52,6 +52,7 @@ export const getUserById = async (
 
 /**
  * Метод создает нового пользователя.
+ * `POST /users`
  * @param req запрос.
  * @param res возвращаемый ответ.
  */
@@ -67,5 +68,58 @@ export const createUser = async (
     res.status(500).send({
       message: 'Ошибка на сервере',
     });
+  }
+};
+
+/**
+ * Метод, обновляющий информацию о пользователе.
+ * `PATCH /users/me`
+ * @param req запрос.
+ * @param res возвращаемый ответ.
+ */
+export const updateProfile = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { name, about } = req.body as IUser;
+    const userId = (req as any).user._id;
+    const user = await User.findByIdAndUpdate(userId, {
+      name,
+      about,
+    });
+    if (!user) {
+      res.status(404).send({ message: 'Пользователя не существует' });
+      return;
+    }
+    res.send(user);
+  } catch (error) {
+    res.status(500).send({ message: 'Ошибка' });
+  }
+};
+
+/**
+ * Метод, обновляющий аватар пользователя.
+ * `PATCH /users/me/avatar`
+ * @param req запрос.
+ * @param res возвращаемый ответ.
+ */
+export const updateAvatar = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { avatar } = req.body as IUser;
+    const userId = (req as any).user._id;
+    const user = await User.findByIdAndUpdate(userId, {
+      avatar,
+    });
+    if (!user) {
+      res.status(404).send({ message: 'Пользователя не существует' });
+      return;
+    }
+    res.send(user);
+  } catch (error) {
+    res.status(500).send({ message: 'Ошибка' });
   }
 };
