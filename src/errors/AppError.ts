@@ -1,5 +1,5 @@
 /**
- * @module errors/AppErrors
+ * @module errors/AppError
  * @description Модуль, экспортирующий класс для обработки ошибок и сам обработчик.
  *
  */

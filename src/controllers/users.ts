@@ -4,7 +4,7 @@
  */
 import mongoose from 'mongoose';
 import { NextFunction, Request, Response } from 'express';
-import { AppError } from '../errors/AppErrors';
+import { AppError } from '../errors/AppError';
 import { ErrorMessages, HttpStatuses } from '../utils/constants';
 import User, { IUser } from '../models/user';
 
@@ -73,7 +73,12 @@ export const createUser = async (
       error instanceof mongoose.Error.ValidationError
       || error instanceof mongoose.Error.CastError
     ) {
-      next(new AppError(ErrorMessages.USER_CREATION_BAD_REQUEST, HttpStatuses.BAD_REQUEST));
+      next(
+        new AppError(
+          ErrorMessages.USER_CREATION_BAD_REQUEST,
+          HttpStatuses.BAD_REQUEST,
+        ),
+      );
     }
     next(error);
   }
@@ -111,7 +116,12 @@ export const updateProfile = async (
       error instanceof mongoose.Error.CastError
       || error instanceof mongoose.Error.ValidationError
     ) {
-      next(new AppError(ErrorMessages.USER_PROFILE_UPD_BAD_REQUEST, HttpStatuses.BAD_REQUEST));
+      next(
+        new AppError(
+          ErrorMessages.USER_PROFILE_UPD_BAD_REQUEST,
+          HttpStatuses.BAD_REQUEST,
+        ),
+      );
     }
     next(error);
   }
@@ -148,7 +158,12 @@ export const updateAvatar = async (
       error instanceof mongoose.Error.CastError
       || error instanceof mongoose.Error.ValidationError
     ) {
-      next(new AppError(ErrorMessages.USER_AVATAR_UPD_BAD_REQUEST, HttpStatuses.BAD_REQUEST));
+      next(
+        new AppError(
+          ErrorMessages.USER_AVATAR_UPD_BAD_REQUEST,
+          HttpStatuses.BAD_REQUEST,
+        ),
+      );
     }
     next(error);
   }

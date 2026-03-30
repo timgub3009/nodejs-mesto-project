@@ -9,17 +9,21 @@ import express, { NextFunction, Response } from 'express';
 import mongoose from 'mongoose';
 import userRouter from './routes/users';
 import cardRouter from './routes/cards';
-import { errorHandler } from './errors/AppErrors';
+import { errorHandler } from './errors/AppError';
 
 const app = express();
+/** Порт по умолчанию. */
 const PORT = 3000;
+/** Ссылка на БД Mongo. */
 const MONGODB_URL = 'mongodb://localhost:27017/mestodb';
+/** Первый пользователь, созданный в БД (временный). */
 const HARDCODED_USER_ID = '69c973f1af1d6e5e1b0b8de7';
 
 mongoose.connect(MONGODB_URL);
 
 app.use(express.json());
 
+// Временное решение.
 app.use((req: any, res: Response, next: NextFunction) => {
   req.user = {
     _id: HARDCODED_USER_ID,

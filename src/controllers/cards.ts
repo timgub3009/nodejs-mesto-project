@@ -5,7 +5,7 @@
 
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import { AppError } from '../errors/AppErrors';
+import { AppError } from '../errors/AppError';
 import { ErrorMessages, HttpStatuses } from '../utils/constants';
 import Card, { ICard } from '../models/card';
 
@@ -55,7 +55,12 @@ export const createCard = async (
       error instanceof mongoose.Error.CastError
       || error instanceof mongoose.Error.ValidationError
     ) {
-      next(new AppError(ErrorMessages.CARD_CREATION_BAD_REQUEST, HttpStatuses.BAD_REQUEST));
+      next(
+        new AppError(
+          ErrorMessages.CARD_CREATION_BAD_REQUEST,
+          HttpStatuses.BAD_REQUEST,
+        ),
+      );
       return;
     }
     next(error);
@@ -110,7 +115,12 @@ export const likeCard = async (
     res.send(card);
   } catch (error) {
     if (error instanceof mongoose.Error.CastError) {
-      next(new AppError(ErrorMessages.CARD_LIKE_BAD_REQUEST, HttpStatuses.BAD_REQUEST));
+      next(
+        new AppError(
+          ErrorMessages.CARD_LIKE_BAD_REQUEST,
+          HttpStatuses.BAD_REQUEST,
+        ),
+      );
       return;
     }
     next(error);
@@ -141,7 +151,12 @@ export const dislikeCard = async (
     res.send(card);
   } catch (error) {
     if (error instanceof mongoose.Error.CastError) {
-      next(new AppError(ErrorMessages.CARD_DISLIKE_BAD_REQUEST, HttpStatuses.BAD_REQUEST));
+      next(
+        new AppError(
+          ErrorMessages.CARD_DISLIKE_BAD_REQUEST,
+          HttpStatuses.BAD_REQUEST,
+        ),
+      );
       return;
     }
     next(error);
