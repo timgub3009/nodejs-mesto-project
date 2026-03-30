@@ -79,6 +79,7 @@ export const createUser = async (
           HttpStatuses.BAD_REQUEST,
         ),
       );
+      return;
     }
     next(error);
   }
@@ -122,6 +123,7 @@ export const updateProfile = async (
           HttpStatuses.BAD_REQUEST,
         ),
       );
+      return;
     }
     next(error);
   }
@@ -164,6 +166,7 @@ export const updateAvatar = async (
           HttpStatuses.BAD_REQUEST,
         ),
       );
+      return;
     }
     next(error);
   }
