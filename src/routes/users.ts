@@ -1,3 +1,9 @@
+/**
+ * @module routes/users
+ * @description Модуль, экспортирующий роутер и маршруты для пользователей.
+ *
+ */
+
 import { Router } from 'express';
 import {
   createUser,

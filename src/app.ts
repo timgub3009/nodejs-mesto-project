@@ -1,7 +1,15 @@
+/**
+ * @module app
+ * @description Модуль, реализующий функционал бэкенда.
+ * Запускает mongoose, routes, express.
+ *
+ */
+
 import express, { NextFunction, Response } from 'express';
 import mongoose from 'mongoose';
 import userRouter from './routes/users';
 import cardRouter from './routes/cards';
+import { errorHandler } from './errors/AppErrors';
 
 const app = express();
 const PORT = 3000;
@@ -23,9 +31,7 @@ app.use((req: any, res: Response, next: NextFunction) => {
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
 
-app.get('/', (req, res) => {
-  res.send('Сервер запущен.');
-});
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Сервер запущен на http://localhost:${PORT}`);

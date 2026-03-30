@@ -1,3 +1,9 @@
+/**
+ * @module routes/cards
+ * @description Модуль, экспортирующий роутер и маршруты для карточек.
+ *
+ */
+
 import { Router } from 'express';
 
 import {

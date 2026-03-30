@@ -3,99 +3,131 @@
  * @description Модуль, описывающий контроллер, ответственный за взаимодействие с моделью Card.
  */
 
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
+import mongoose from 'mongoose';
+import { AppError } from '../errors/AppErrors';
+import { ErrorMessages, HttpStatuses } from '../utils/constants';
 import Card, { ICard } from '../models/card';
 
 /**
  * Метод возвращает все карточки.
  * `GET /cards`
- * @param req запрос.
- * @param res возвращаемый ответ.
+ * @param req объект запроса.
+ * @param res объект ответа.
+ * @param next колбэк для передачи управления следующему обработчику или передачи ошибки.
  */
-export const getAllCards = async (req: Request, res: Response) => {
+export const getAllCards = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const cards = await Card.find({});
     res.send(cards);
   } catch (error) {
-    res.status(500).send({ message: 'Ошибка' });
+    next(error);
   }
 };
 
 /**
  * Метод создает карточку.
  * `POST /cards`
- * @param req запрос.
- * @param res возвращаемый ответ.
+ * @param req объект запроса.
+ * @param res объект ответа.
+ * @param next колбэк для передачи управления следующему обработчику или передачи ошибки.
  */
-export const createCard = async (req: Request, res: Response) => {
+export const createCard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     const { name, link } = req.body as ICard;
     const owner = (req as any).user._id;
-    const newCard = Card.create({
+    const newCard = await Card.create({
       name,
       link,
       owner,
     });
-    res.status(201).send(newCard);
+    res.status(HttpStatuses.CREATED).send(newCard);
   } catch (error) {
-    res.status(500).send({ message: 'Ошибка' });
+    if (
+      error instanceof mongoose.Error.CastError
+      || error instanceof mongoose.Error.ValidationError
+    ) {
+      next(new AppError(ErrorMessages.CARD_CREATION_BAD_REQUEST, HttpStatuses.BAD_REQUEST));
+      return;
+    }
+    next(error);
   }
 };
 
 /**
  * Метод удаляет карточку по ее идентификатору.
  * `DELETE /cards/:cardId`
- * @param req запрос.
- * @param res возвращаемый ответ.
+ * @param req объект запроса.
+ * @param res объект ответа.
+ * @param next колбэк для передачи управления следующему обработчику или передачи ошибки.
  */
 export const deleteCard = async (
   req: Request,
   res: Response,
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const { cardId } = req.params;
     const card = await Card.findByIdAndDelete(cardId);
     if (!card) {
-      res.status(404).send({ message: 'Карточка не найдена' });
-      return;
+      throw new AppError(ErrorMessages.CARD_NOT_FOUND, HttpStatuses.NOT_FOUND);
     }
-    res.send({ message: 'Карточка удалена' });
+    res.send(card);
   } catch (error) {
-    res.status(500).send({ message: 'Ошибка' });
+    next(error);
   }
 };
 
 /**
  * Метод добавляет лайк карточке.
  * `PUT /cards/:cardId/likes`
- * @param req запрос.
- * @param res возвращаемый ответ.
+ * @param req объект запроса.
+ * @param res объект ответа.
+ * @param next колбэк для передачи управления следующему обработчику или передачи ошибки.
  */
-export const likeCard = async (req: Request, res: Response): Promise<void> => {
+export const likeCard = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
-      { $addToSet: { likes: (req as any).user._id } }, // добавить _id в массив, если его там нет
+      { $addToSet: { likes: (req as any).user._id } },
       { new: true },
     );
     if (!card) {
-      res.status(404).send({ message: 'Карточка не найдена' });
+      throw new AppError(ErrorMessages.CARD_NOT_FOUND, HttpStatuses.NOT_FOUND);
     }
     res.send(card);
   } catch (error) {
-    res.status(500).send({ message: 'Ошибка' });
+    if (error instanceof mongoose.Error.CastError) {
+      next(new AppError(ErrorMessages.CARD_LIKE_BAD_REQUEST, HttpStatuses.BAD_REQUEST));
+      return;
+    }
+    next(error);
   }
 };
 
 /**
  * Метод убирает лайк у карточки.
  * `DELETE /cards/:cardId/likes `
- * @param req запрос.
- * @param res возвращаемый ответ.
+ * @param req объект запроса.
+ * @param res объект ответа.
+ * @param next колбэк для передачи управления следующему обработчику или передачи ошибки.
  */
 export const dislikeCard = async (
   req: Request,
   res: Response,
+  next: NextFunction,
 ): Promise<void> => {
   try {
     const card = await Card.findByIdAndUpdate(
@@ -103,8 +135,15 @@ export const dislikeCard = async (
       { $pull: { likes: (req as any).user._id } },
       { new: true },
     );
+    if (!card) {
+      throw new AppError(ErrorMessages.CARD_NOT_FOUND, HttpStatuses.NOT_FOUND);
+    }
     res.send(card);
   } catch (error) {
-    res.status(500).send({ message: 'Ошибка' });
+    if (error instanceof mongoose.Error.CastError) {
+      next(new AppError(ErrorMessages.CARD_DISLIKE_BAD_REQUEST, HttpStatuses.BAD_REQUEST));
+      return;
+    }
+    next(error);
   }
 };
