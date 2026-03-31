@@ -5,26 +5,39 @@
  *
  */
 
-import express, { NextFunction, Response } from 'express';
+import dotenv from 'dotenv';
+import express, { NextFunction, Response, Request } from 'express';
 import mongoose from 'mongoose';
 import userRouter from './routes/users';
 import cardRouter from './routes/cards';
 import { errorHandler } from './errors/AppError';
 
+dotenv.config();
+
 const app = express();
-/** Порт по умолчанию. */
-const PORT = 3000;
-/** Ссылка на БД Mongo. */
-const MONGODB_URL = 'mongodb://localhost:27017/mestodb';
-/** Первый пользователь, созданный в БД (временный). */
-const HARDCODED_USER_ID = '69c973f1af1d6e5e1b0b8de7';
+
+/** Порт сервера. */
+const { PORT } = process.env;
+
+/** URL подключения к MongoDB. */
+const { MONGODB_URL } = process.env;
+
+/** Временный ID пользователя для авторизации. */
+const { HARDCODED_USER_ID } = process.env;
+
+// Гарантируем, что сервер не запустится с неполной конфигурацией.
+if (!PORT || !MONGODB_URL || !HARDCODED_USER_ID) {
+  // eslint-disable-next-line no-console
+  console.error('Отсутствуют необходимые переменные окружения');
+  process.exit(1);
+}
 
 mongoose.connect(MONGODB_URL);
 
 app.use(express.json());
 
 // Временное решение.
-app.use((req: any, res: Response, next: NextFunction) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   req.user = {
     _id: HARDCODED_USER_ID,
   };
@@ -38,5 +51,6 @@ app.use('/cards', cardRouter);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`Сервер запущен на http://localhost:${PORT}`);
 });

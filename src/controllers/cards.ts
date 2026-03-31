@@ -43,7 +43,7 @@ export const createCard = async (
 ): Promise<void> => {
   try {
     const { name, link } = req.body as ICard;
-    const owner = (req as any).user._id;
+    const owner = req.user._id;
     const newCard = await Card.create({
       name,
       link,
@@ -87,6 +87,10 @@ export const deleteCard = async (
     }
     res.send(card);
   } catch (error) {
+    if (error instanceof mongoose.Error.CastError) {
+      next(new AppError(ErrorMessages.CARD_NOT_FOUND, HttpStatuses.NOT_FOUND));
+      return;
+    }
     next(error);
   }
 };
@@ -106,7 +110,7 @@ export const likeCard = async (
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
-      { $addToSet: { likes: (req as any).user._id } },
+      { $addToSet: { likes: req.user._id } },
       { new: true },
     );
     if (!card) {
@@ -142,7 +146,7 @@ export const dislikeCard = async (
   try {
     const card = await Card.findByIdAndUpdate(
       req.params.cardId,
-      { $pull: { likes: (req as any).user._id } },
+      { $pull: { likes: req.user._id } },
       { new: true },
     );
     if (!card) {

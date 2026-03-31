@@ -5,7 +5,7 @@
  */
 
 import {
-  ErrorRequestHandler, NextFunction, Request, Response,
+  ErrorRequestHandler, Response, Request, NextFunction,
 } from 'express';
 import { ErrorMessages, HttpStatuses } from '../utils/constants';
 
@@ -30,17 +30,26 @@ export class AppError extends Error {
  * @param next колбэк для передачи управления следующему обработчику или передачи ошибки.
  */
 export const errorHandler: ErrorRequestHandler = (
-  err: any,
-  req: Request,
+  err: AppError | Error,
+  _req: Request,
   res: Response,
+  // next необходим для корректного функционирования ErrorRequestHandler
   // eslint-disable-next-line no-unused-vars
   next: NextFunction,
 ) => {
-  const { statusCode = HttpStatuses.INTERNAL_SERVER_ERROR, message } = err;
-  res.status(statusCode).send({
-    message:
-      statusCode === HttpStatuses.INTERNAL_SERVER_ERROR
-        ? ErrorMessages.SERVER_ERROR
-        : message,
-  });
+  if (err instanceof AppError) {
+    const { statusCode = HttpStatuses.INTERNAL_SERVER_ERROR, message } = err;
+    res.status(statusCode).json({
+      message:
+        statusCode === HttpStatuses.INTERNAL_SERVER_ERROR
+          ? ErrorMessages.SERVER_ERROR
+          : message,
+    });
+  } else {
+    // eslint-disable-next-line no-console
+    console.error('Необработанная ошибка:', err);
+    res.status(HttpStatuses.INTERNAL_SERVER_ERROR).json({
+      message: ErrorMessages.SERVER_ERROR,
+    });
+  }
 };

@@ -29,4 +29,12 @@
     ],
     "no-underscore-dangle": ["error", { "allow": ["_id"] }],
   },
+  "overrides": [
+    {
+      "files": ["**/*.d.ts"],
+      "rules": {
+        "no-unused-vars": "off"
+      }
+    }
+  ]
 }

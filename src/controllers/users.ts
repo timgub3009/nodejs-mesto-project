@@ -48,6 +48,10 @@ export const getUserById = async (
     }
     res.send(user);
   } catch (error) {
+    if (error instanceof mongoose.Error.CastError) {
+      next(new AppError(ErrorMessages.USER_NOT_FOUND, HttpStatuses.NOT_FOUND));
+      return;
+    }
     next(error);
   }
 };
@@ -99,7 +103,7 @@ export const updateProfile = async (
 ): Promise<void> => {
   try {
     const { name, about } = req.body as IUser;
-    const userId = (req as any).user._id;
+    const userId = req.user._id;
     const user = await User.findByIdAndUpdate(
       userId,
       {
@@ -143,7 +147,7 @@ export const updateAvatar = async (
 ): Promise<void> => {
   try {
     const { avatar } = req.body as IUser;
-    const userId = (req as any).user._id;
+    const userId = req.user._id;
     const user = await User.findByIdAndUpdate(
       userId,
       {

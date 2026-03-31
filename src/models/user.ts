@@ -23,16 +23,20 @@ const userSchema = new Schema<IUser>({
     required: true,
     minlength: 2,
     maxlength: 30,
+    default: 'Жак Ив Кусто',
   },
   about: {
     type: String,
     required: true,
     minlength: 2,
     maxlength: 200,
+    default: 'Исследователь',
   },
   avatar: {
     type: String,
     required: true,
+    default:
+      'https://upload.wikimedia.org/wikipedia/commons/1/10/Cousteau1972_%28cropped%29.jpg',
   },
 });
 
