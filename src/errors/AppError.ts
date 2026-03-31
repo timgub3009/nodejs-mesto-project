@@ -35,7 +35,7 @@ export const errorHandler: ErrorRequestHandler = (
   res: Response,
   // next необходим для корректного функционирования ErrorRequestHandler
   // eslint-disable-next-line no-unused-vars
-  next: NextFunction,
+  _next: NextFunction,
 ) => {
   if (err instanceof AppError) {
     const { statusCode = HttpStatuses.INTERNAL_SERVER_ERROR, message } = err;
