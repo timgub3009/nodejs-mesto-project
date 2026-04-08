@@ -8,6 +8,7 @@
 import dotenv from 'dotenv';
 import express, { NextFunction, Response, Request } from 'express';
 import mongoose from 'mongoose';
+import { createUser, login } from './controllers/users';
 import userRouter from './routes/users';
 import cardRouter from './routes/cards';
 import { errorHandler } from './errors/AppError';
@@ -44,6 +45,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
   next();
 });
+
+app.use('/signin', login);
+app.use('/signup', createUser);
 
 app.use('/users', userRouter);
 app.use('/cards', cardRouter);
