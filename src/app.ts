@@ -6,12 +6,13 @@
  */
 
 import dotenv from 'dotenv';
-import express, { NextFunction, Response, Request } from 'express';
+import express from 'express';
 import mongoose from 'mongoose';
 import { createUser, login } from './controllers/users';
 import userRouter from './routes/users';
 import cardRouter from './routes/cards';
 import { errorHandler } from './errors/AppError';
+import auth from './middlewares/auth';
 
 dotenv.config();
 
@@ -23,11 +24,8 @@ const { PORT } = process.env;
 /** URL подключения к MongoDB. */
 const { MONGODB_URL } = process.env;
 
-/** Временный ID пользователя для авторизации. */
-const { HARDCODED_USER_ID } = process.env;
-
 // Гарантируем, что сервер не запустится с неполной конфигурацией.
-if (!PORT || !MONGODB_URL || !HARDCODED_USER_ID) {
+if (!PORT || !MONGODB_URL) {
   // eslint-disable-next-line no-console
   console.error('Отсутствуют необходимые переменные окружения');
   process.exit(1);
@@ -37,20 +35,11 @@ mongoose.connect(MONGODB_URL);
 
 app.use(express.json());
 
-// Временное решение.
-app.use((req: Request, res: Response, next: NextFunction) => {
-  req.user = {
-    _id: HARDCODED_USER_ID,
-  };
-
-  next();
-});
-
 app.use('/signin', login);
 app.use('/signup', createUser);
 
-app.use('/users', userRouter);
-app.use('/cards', cardRouter);
+app.use('/users', auth, userRouter);
+app.use('/cards', auth, cardRouter);
 
 app.use(errorHandler);
 
