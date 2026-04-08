@@ -22,6 +22,7 @@ export const ErrorMessages = {
   EMAIL_INVALID: "Некорректный формат email",
   EMAIL_EXISTS: "Пользователь с таким email уже зарегистрирован",
   AUTHORIZATION_FAILED: "Неправильный пароль или email",
+  AUTHORIZATION_NEEDED: 'Пользователь не авторизован',
 } as const;
 
 /** Статусы HTTP-запросов. */

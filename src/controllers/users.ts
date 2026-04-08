@@ -18,6 +18,29 @@ import User, { IUser } from '../models/user';
 const { JWT_SECRET = 'default-secret˝' } = process.env;
 
 /**
+ * Метод, возвращающий информацию о текущем пользователе.
+ * `GET /users/me`
+ * @param req объект запроса.
+ * @param res объект ответа.
+ * @param next колбэк для передачи управления следующему обработчику или передачи ошибки.
+ */
+export const getCurrentUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      throw new AppError(ErrorMessages.USER_NOT_FOUND, HttpStatuses.NOT_FOUND);
+    }
+    res.send(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
  * Метод, возвращающий всех пользователей.
  * `GET /users`
  * @param req объект запроса.
