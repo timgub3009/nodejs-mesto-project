@@ -7,7 +7,11 @@
 import {
   ErrorRequestHandler, Response, Request, NextFunction,
 } from 'express';
-import { ErrorMessages, HttpStatuses } from '../utils/constants';
+import {
+  DUPLICATE_EMAIL_ERR_CODE,
+  ErrorMessages,
+  HttpStatuses,
+} from '../utils/constants';
 
 /** Класс для обработки ошибок. */
 export class AppError extends Error {
@@ -30,7 +34,7 @@ export class AppError extends Error {
  * @param next колбэк для передачи управления следующему обработчику или передачи ошибки.
  */
 export const errorHandler: ErrorRequestHandler = (
-  err: AppError | Error,
+  err: unknown,
   _req: Request,
   res: Response,
   // next необходим для корректного функционирования ErrorRequestHandler
@@ -44,6 +48,10 @@ export const errorHandler: ErrorRequestHandler = (
         statusCode === HttpStatuses.INTERNAL_SERVER_ERROR
           ? ErrorMessages.SERVER_ERROR
           : message,
+    });
+  } else if ((err as any)?.code === DUPLICATE_EMAIL_ERR_CODE) {
+    res.status(HttpStatuses.CONFLICT).json({
+      message: ErrorMessages.EMAIL_EXISTS,
     });
   } else {
     // eslint-disable-next-line no-console

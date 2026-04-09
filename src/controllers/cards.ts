@@ -81,10 +81,19 @@ export const deleteCard = async (
 ): Promise<void> => {
   try {
     const { cardId } = req.params;
-    const card = await Card.findByIdAndDelete(cardId);
+    const card = await Card.findById(cardId);
+
     if (!card) {
       throw new AppError(ErrorMessages.CARD_NOT_FOUND, HttpStatuses.NOT_FOUND);
     }
+    if (card.owner.toString() !== req.user._id) {
+      throw new AppError(
+        ErrorMessages.ACTION_FORBIDDEN,
+        HttpStatuses.FORBIDDEN,
+      );
+    }
+
+    await Card.findByIdAndDelete(cardId);
     res.send(card);
   } catch (error) {
     if (error instanceof mongoose.Error.CastError) {

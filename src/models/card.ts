@@ -5,6 +5,7 @@
  */
 
 import { Schema, Types, model } from 'mongoose';
+import { URL_REGEX } from '../validators';
 
 /** Интерфейс карточки. */
 export interface ICard {
@@ -31,6 +32,9 @@ const cardSchema = new Schema<ICard>({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (v: string) => URL_REGEX.test(v),
+    },
   },
   owner: {
     type: Schema.Types.ObjectId,

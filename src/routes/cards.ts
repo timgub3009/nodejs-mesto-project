@@ -13,11 +13,13 @@ import {
   getAllCards,
   likeCard,
 } from '../controllers/cards';
+import validate from '../middlewares/validate';
+import createCardSchema from '../validators/card';
 
 const cardRouter = Router();
 
 cardRouter.get('/', getAllCards);
-cardRouter.post('/', createCard);
+cardRouter.post('/', validate(createCardSchema), createCard);
 cardRouter.delete('/:cardId', deleteCard);
 cardRouter.put('/:cardId/likes', likeCard);
 cardRouter.delete('/:cardId/likes', dislikeCard);

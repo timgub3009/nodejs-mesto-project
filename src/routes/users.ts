@@ -5,6 +5,8 @@
  */
 
 import { Router } from 'express';
+import validate from '../middlewares/validate';
+import { updateAvatarSchema, updateProfileSchema } from '../validators';
 import {
   getAllUsers,
   getCurrentUser,
@@ -18,7 +20,7 @@ const userRouter = Router();
 userRouter.get('/me', getCurrentUser);
 userRouter.get('/', getAllUsers);
 userRouter.get('/:userId', getUserById);
-userRouter.patch('/me', updateProfile);
-userRouter.patch('/me/avatar', updateAvatar);
+userRouter.patch('/me', validate(updateProfileSchema), updateProfile);
+userRouter.patch('/me/avatar', validate(updateAvatarSchema), updateAvatar);
 
 export default userRouter;

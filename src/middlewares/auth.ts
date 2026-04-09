@@ -17,10 +17,10 @@ const { JWT_SECRET = 'default-secret' } = process.env;
 /**
  * Middleware для проверки авторизации (через проверку JWT токена).
  * @param req объект запроса.
- * @param res объект ответа.
+ * @param _res объект ответа.
  * @param next колбэк для передачи управления следующему обработчику или передачи ошибки.
  */
-const auth = (req: Request, res: Response, next: NextFunction): void => {
+const auth = (req: Request, _res: Response, next: NextFunction): void => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {

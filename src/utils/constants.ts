@@ -23,6 +23,7 @@ export const ErrorMessages = {
   EMAIL_EXISTS: 'Пользователь с таким email уже зарегистрирован',
   AUTHORIZATION_FAILED: 'Неправильный пароль или email',
   AUTHORIZATION_NEEDED: 'Пользователь не авторизован',
+  ACTION_FORBIDDEN: 'Нет прав на выполнение данного действия',
 } as const;
 
 /** Статусы HTTP-запросов. */
@@ -33,6 +34,7 @@ export const HttpStatuses = {
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
+  CONFLICT: 409,
   INTERNAL_SERVER_ERROR: 500,
 } as const;
 
@@ -41,3 +43,6 @@ export const SALT_ROUNDS = 10;
 
 /** Время жизни куки (7 дней в ms). */
 export const COOKIE_LIFE_SPAN = 604800000;
+
+/** Номер ошибки, появляющейся при регистрации с уже использующимся в приложении email. */
+export const DUPLICATE_EMAIL_ERR_CODE = 11000;
