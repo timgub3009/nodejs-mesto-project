@@ -5,14 +5,13 @@
 
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
+import { JWT_SECRET } from '../../config';
 import { AppError } from '../errors/AppError';
 import { ErrorMessages, HttpStatuses } from '../utils/constants';
 
 interface PayloadWithJwt {
   _id: string;
 }
-
-const { JWT_SECRET = 'default-secret' } = process.env;
 
 /**
  * Middleware для проверки авторизации (через проверку JWT токена).
@@ -21,9 +20,9 @@ const { JWT_SECRET = 'default-secret' } = process.env;
  * @param next колбэк для передачи управления следующему обработчику или передачи ошибки.
  */
 const auth = (req: Request, _res: Response, next: NextFunction): void => {
-  const { authorization } = req.headers;
+  const token = req.cookies.jwt;
 
-  if (!authorization || !authorization.startsWith('Bearer ')) {
+  if (!token) {
     next(
       new AppError(
         ErrorMessages.AUTHORIZATION_NEEDED,
@@ -32,8 +31,6 @@ const auth = (req: Request, _res: Response, next: NextFunction): void => {
     );
     return;
   }
-
-  const token = authorization.replace('Bearer ', '');
 
   try {
     const payload = jwt.verify(token, JWT_SECRET) as PayloadWithJwt;

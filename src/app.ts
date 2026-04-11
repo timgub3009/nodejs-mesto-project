@@ -5,9 +5,10 @@
  *
  */
 
-import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
+import cookieParser from 'cookie-parser';
+import { MONGODB_URL, PORT } from '../config';
 import validate from './middlewares/validate';
 import { signinSchema, signupSchema } from './validators';
 import { createUser, login } from './controllers/users';
@@ -17,26 +18,13 @@ import { errorHandler } from './errors/AppError';
 import auth from './middlewares/auth';
 import { requestsLogger, errorsLogger } from './middlewares/logger';
 
-dotenv.config();
-
 const app = express();
-
-/** Порт сервера. */
-const { PORT } = process.env;
-
-/** URL подключения к MongoDB. */
-const { MONGODB_URL } = process.env;
-
-// Гарантируем, что сервер не запустится с неполной конфигурацией.
-if (!PORT || !MONGODB_URL) {
-  // eslint-disable-next-line no-console
-  console.error('Отсутствуют необходимые переменные окружения');
-  process.exit(1);
-}
 
 mongoose.connect(MONGODB_URL);
 
 app.use(express.json());
+
+app.use(cookieParser());
 
 app.use(requestsLogger);
 

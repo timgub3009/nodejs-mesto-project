@@ -2,10 +2,12 @@
  * @module controllers/users
  * @description Модуль, описывающий контроллер, ответственный за взаимодействие с моделью User.
  */
+
 import mongoose from 'mongoose';
 import { NextFunction, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../../config';
 import { AppError } from '../errors/AppError';
 import {
   ErrorMessages,
@@ -14,8 +16,6 @@ import {
   SALT_ROUNDS,
 } from '../utils/constants';
 import User, { IUser } from '../models/user';
-
-const { JWT_SECRET = 'default-secret˝' } = process.env;
 
 /**
  * Метод, возвращающий информацию о текущем пользователе.
